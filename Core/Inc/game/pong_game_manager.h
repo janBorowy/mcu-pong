@@ -3,6 +3,7 @@
 
 #include "game/bar.h"
 #include "game/ball.h"
+#include "game/enemy_controller.h"
 #include "game/game_window.h"
 
 typedef struct {
@@ -11,6 +12,7 @@ typedef struct {
     Bar *player;
     Bar *enemy;
     Ball *ball;
+    EnemyController *enemy_controller;
 } PongGameConfig;
 
 void game_init(PongGameConfig *game);

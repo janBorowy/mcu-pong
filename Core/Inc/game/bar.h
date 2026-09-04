@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define BAR_HEIGHT PIXEL_HEIGHT_TIMES(3)
+#define BAR_HEIGHT PIXEL_HEIGHT_TIMES(2)
 #define BAR_SPEED 16
 
 typedef struct {

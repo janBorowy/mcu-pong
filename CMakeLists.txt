@@ -47,12 +47,14 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
+    Core/Src/wav_file_reader.c
     Core/Src/driver/max7219.c
     Core/Src/driver/double_max7219_display.c
     Core/Src/game/pong_game_manager.c
     Core/Src/game/bar.c
     Core/Src/game/ball.c
     Core/Src/game/game_window.c
+    Core/Src/game/enemy_controller.c
 )
 
 # Add include paths

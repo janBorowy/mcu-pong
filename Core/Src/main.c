@@ -26,7 +26,9 @@
 #include "game/pong_game_manager.h"
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_gpio.h"
+#include "wav_file_reader.h"
 #include <stdlib.h>
+#include "audio/start.wav.h"
 
 /* USER CODE END Includes */
 
@@ -146,6 +148,9 @@ int main(void)
   window.led_matrix = &display;
   Game.window = &window;
   game_init(&Game);
+
+  WavFile start;
+  wav_load_file(&start, start_wav);
   /* USER CODE END 2 */
 
   /* Infinite loop */

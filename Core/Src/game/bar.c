@@ -33,5 +33,4 @@ void bar_update(Bar *bar) {
 void bar_draw(Bar *bar, GameWindow *window) {
     game_window_draw_pixel(window, bar->x, bar->y);
     game_window_draw_pixel(window, bar->x, bar->y + PIXEL_HEIGHT_TIMES(1));
-    game_window_draw_pixel(window, bar->x, bar->y + PIXEL_HEIGHT_TIMES(2));
 }

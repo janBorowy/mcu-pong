@@ -1,4 +1,5 @@
 #include "game/pong_game_manager.h"
+#include "game/enemy_controller.h"
 #include "game/game_window.h"
 #include "stdlib.h"
 
@@ -15,6 +16,7 @@ void game_init(PongGameConfig *game) {
     game->player = bar_create(0);
     game->enemy = bar_create(PIXEL_HEIGHT_TIMES(15));
     game->ball = create_ball_random_direction();
+    game->enemy_controller = enemy_controller_create(game->enemy); 
 
     game->was_initialized = true;
 }
@@ -23,6 +25,7 @@ void game_deinit(PongGameConfig *game) {
     free(game->player);
     free(game->enemy);
     free(game->ball);
+    free(game->enemy_controller);
 }
 
 void game_loop(PongGameConfig *game) {
@@ -47,6 +50,7 @@ void game_handle_down_button_released(PongGameConfig *game) {
 }
 
 void update(PongGameConfig *game) {
+    enemy_controller_update(game->enemy_controller, game->ball);
     bar_update(game->player);
     bar_update(game->enemy);
     ball_update(game->ball, game->player, game->enemy);
