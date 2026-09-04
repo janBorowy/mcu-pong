@@ -1,14 +1,16 @@
 #ifndef PONG_GAME_MANAGER_H
 #define PONG_GAME_MANAGER_H
 
-#include "driver/double_max7219_display.h"
 #include "game/bar.h"
+#include "game/ball.h"
+#include "game/game_window.h"
 
 typedef struct {
     bool was_initialized;
-    DoubleMax7219Config *display;
+    GameWindow *window;
     Bar *player;
     Bar *enemy;
+    Ball *ball;
 } PongGameConfig;
 
 void game_init(PongGameConfig *game);

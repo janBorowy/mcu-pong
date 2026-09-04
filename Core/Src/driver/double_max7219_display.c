@@ -5,7 +5,6 @@ void display_init(DoubleMax7219Config *config) {
     max7219_init(&config->left);
     max7219_init(&config->right);
     memset(config->display_data, 0, DISPLAY_COLS);
-    memset(config->display_data_updated, false, DISPLAY_COLS);
 }
 
 void display_set(DoubleMax7219Config *config, uint8_t col, uint8_t row, _Bool is_on) {
@@ -17,7 +16,6 @@ void display_set(DoubleMax7219Config *config, uint8_t col, uint8_t row, _Bool is
         config->display_data[col] &= (0xFF - (1 << row));
     }
 
-    config->display_data_updated[col] = true;
 }
 
 void display_clear(DoubleMax7219Config *config) {
@@ -28,15 +26,9 @@ void display_clear(DoubleMax7219Config *config) {
 
 void display_refresh(DoubleMax7219Config *config) {
     for (int i = 0; i < DISPLAY_COLS / 2; i++) {
-        if (config->display_data_updated[i]) {
-            max7219_set_column(&config->left, i, config->display_data[i]);
-            config->display_data_updated[i] = false;
-        }
+        max7219_set_column(&config->left, i, config->display_data[i]);
     }
     for (int i = DISPLAY_COLS / 2; i < DISPLAY_COLS; i++) {
-        if (config->display_data_updated[i]) {
-            max7219_set_column(&config->right, i - DISPLAY_COLS / 2, config->display_data[i]);
-            config->display_data_updated[i] = false;
-        }
+        max7219_set_column(&config->right, i - DISPLAY_COLS / 2, config->display_data[i]);
     }
 }

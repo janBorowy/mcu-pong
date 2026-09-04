@@ -9,7 +9,6 @@ typedef struct {
     Max7219_Config left;
     Max7219_Config right;
     uint8_t display_data[DISPLAY_COLS];
-    _Bool display_data_updated[DISPLAY_COLS];
 } DoubleMax7219Config;
 
 void display_init(DoubleMax7219Config *config);

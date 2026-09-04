@@ -26,6 +26,7 @@
 #include "game/pong_game_manager.h"
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_gpio.h"
+#include <stdlib.h>
 
 /* USER CODE END Includes */
 
@@ -64,28 +65,36 @@ static void MX_USART2_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-#define GAME_FREQ_HZ 12
+#define GAME_FREQ_HZ 24
 #define GAME_FRAME_MS (1000/GAME_FREQ_HZ)
 
 PongGameConfig Game;
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+  // Up button
   if (GPIO_Pin == BLUE_BUTTON_Pin) {
     if (Game.was_initialized) {
-      if (HAL_GPIO_ReadPin(BLUE_BUTTON_GPIO_Port, BLUE_BUTTON_Pin) == RESET) {
+      if (HAL_GPIO_ReadPin(BLUE_BUTTON_GPIO_Port, BLUE_BUTTON_Pin) == GPIO_PIN_RESET) {
         game_handle_up_button_pressed(&Game);
       } else {
         game_handle_up_button_released(&Game);
     }
     }
+    // Down button
   } else if (GPIO_Pin == RED_BUTTON_Pin) {
     if (Game.was_initialized) {
-      if (HAL_GPIO_ReadPin(RED_BUTTON_GPIO_Port, RED_BUTTON_Pin) == RESET) {
+      if (HAL_GPIO_ReadPin(RED_BUTTON_GPIO_Port, RED_BUTTON_Pin) == GPIO_PIN_RESET) {
         game_handle_down_button_pressed(&Game);
       } else {
         game_handle_down_button_released(&Game);
       }
     }
+    // Reset button
+  } else if (GPIO_Pin == GAME_RESET_BUTTON_Pin) {
+    if (Game.was_initialized) {
+      game_deinit(&Game);
+    }
+    game_init(&Game);
   }
 }
 /* USER CODE END 0 */
@@ -133,7 +142,9 @@ int main(void)
   DoubleMax7219Config display;
   display.left = config_left;
   display.right = config_right;
-  Game.display = &display;
+  GameWindow window;
+  window.led_matrix = &display;
+  Game.window = &window;
   game_init(&Game);
   /* USER CODE END 2 */
 
@@ -304,6 +315,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : GAME_RESET_BUTTON_Pin */
+  GPIO_InitStruct.Pin = GAME_RESET_BUTTON_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GAME_RESET_BUTTON_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);

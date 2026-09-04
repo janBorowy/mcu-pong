@@ -1,14 +1,20 @@
 #include "game/pong_game_manager.h"
+#include "game/game_window.h"
 #include "stdlib.h"
+
+#define BALL_VX 16
+#define BALL_VY 8
 
 void update(PongGameConfig *game);
 void draw(PongGameConfig *game);
+Ball *create_ball_random_direction();
 
 void game_init(PongGameConfig *game) {
-    display_init(game->display);
+    game_window_init(game->window);
 
     game->player = bar_create(0);
-    game->enemy = bar_create(15);
+    game->enemy = bar_create(PIXEL_HEIGHT_TIMES(15));
+    game->ball = create_ball_random_direction();
 
     game->was_initialized = true;
 }
@@ -16,6 +22,7 @@ void game_init(PongGameConfig *game) {
 void game_deinit(PongGameConfig *game) {
     free(game->player);
     free(game->enemy);
+    free(game->ball);
 }
 
 void game_loop(PongGameConfig *game) {
@@ -42,11 +49,37 @@ void game_handle_down_button_released(PongGameConfig *game) {
 void update(PongGameConfig *game) {
     bar_update(game->player);
     bar_update(game->enemy);
+    ball_update(game->ball, game->player, game->enemy);
+
+    if (game->ball->enemy_scored || game->ball->player_scored) {
+        game_deinit(game);
+        game_init(game);
+    }
 }
 
 void draw(PongGameConfig *game) {
-    display_clear(game->display);
-    bar_draw(game->player,game->display);
-    bar_draw(game->enemy, game->display);
-    display_refresh(game->display);
+    game_window_clear(game->window);
+    bar_draw(game->player,game->window);
+    bar_draw(game->enemy, game->window);
+    ball_draw(game->ball, game->window);
+    game_window_refresh(game->window);
+}
+
+Ball *create_ball_random_direction() {
+    uint8_t dir = rand() % 6;
+    switch (dir) {
+        case 0:
+            return ball_create(PIXEL_HEIGHT_TIMES(7), PIXEL_HEIGHT_TIMES(4), -BALL_VX - BALL_VY, 0);
+        case 1:
+            return ball_create(PIXEL_HEIGHT_TIMES(8),PIXEL_HEIGHT_TIMES(4), BALL_VX + BALL_VY, 0);
+        case 2:
+            return ball_create(PIXEL_HEIGHT_TIMES(7),PIXEL_HEIGHT_TIMES(3), -BALL_VX, -BALL_VY);
+        case 3:
+            return ball_create(PIXEL_HEIGHT_TIMES(7),PIXEL_HEIGHT_TIMES(4), -BALL_VX, BALL_VY);
+        case 4:
+            return ball_create(PIXEL_HEIGHT_TIMES(8),PIXEL_HEIGHT_TIMES(3), BALL_VX, -BALL_VY);
+        case 5:
+        default:
+            return ball_create(PIXEL_HEIGHT_TIMES(8),PIXEL_HEIGHT_TIMES(4), BALL_VX, BALL_VY);
+    }
 }

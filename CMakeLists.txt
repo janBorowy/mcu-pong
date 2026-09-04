@@ -51,6 +51,8 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Core/Src/driver/double_max7219_display.c
     Core/Src/game/pong_game_manager.c
     Core/Src/game/bar.c
+    Core/Src/game/ball.c
+    Core/Src/game/game_window.c
 )
 
 # Add include paths
