@@ -8,6 +8,8 @@
 
 void update(PongGameConfig *game);
 void draw(PongGameConfig *game);
+void reset_position(PongGameConfig *game);
+void score_update(PongGameConfig *game);
 Ball *create_ball_random_direction();
 
 void game_init(PongGameConfig *game) {
@@ -17,8 +19,10 @@ void game_init(PongGameConfig *game) {
     game->enemy = bar_create(PIXEL_HEIGHT_TIMES(15));
     game->ball = create_ball_random_direction();
     game->enemy_controller = enemy_controller_create(game->enemy); 
+    game->frozen = true;
 
     game->was_initialized = true;
+    audio_player_play(game->audio_player, START);
 }
 
 void game_deinit(PongGameConfig *game) {
@@ -28,16 +32,25 @@ void game_deinit(PongGameConfig *game) {
     free(game->enemy_controller);
 }
 
+void game_reset(PongGameConfig *game) {
+    game_deinit(game);
+    game_init(game);
+}
+
 void game_loop(PongGameConfig *game) {
-    update(game);
+    if (!game->frozen) {
+        update(game);
+    }
     draw(game);
 }
 
 void game_handle_up_button_pressed(PongGameConfig *game) {
+    game->frozen = false;
     game->player->moving_up = true;
 }
 
 void game_handle_down_button_pressed(PongGameConfig *game) {
+    game->frozen = false;
     game->player->moving_down = true;
 }
 
@@ -53,12 +66,8 @@ void update(PongGameConfig *game) {
     enemy_controller_update(game->enemy_controller, game->ball);
     bar_update(game->player);
     bar_update(game->enemy);
-    ball_update(game->ball, game->player, game->enemy);
-
-    if (game->ball->enemy_scored || game->ball->player_scored) {
-        game_deinit(game);
-        game_init(game);
-    }
+    ball_update(game->ball, game->player, game->enemy, game->audio_player);
+    score_update(game);
 }
 
 void draw(PongGameConfig *game) {
@@ -67,6 +76,28 @@ void draw(PongGameConfig *game) {
     bar_draw(game->enemy, game->window);
     ball_draw(game->ball, game->window);
     game_window_refresh(game->window);
+}
+
+void reset_position(PongGameConfig *game) {
+    free(game->player);
+    free(game->enemy);
+    free(game->ball);
+    free(game->enemy_controller);
+    game->player = bar_create(0);
+    game->enemy = bar_create(PIXEL_HEIGHT_TIMES(15));
+    game->ball = create_ball_random_direction();
+    game->enemy_controller = enemy_controller_create(game->enemy); 
+    game->frozen = true;
+}
+
+void score_update(PongGameConfig *game) {
+    if (game->ball->enemy_scored) {
+        audio_player_play(game->audio_player, ENEMY_SCORE);
+        reset_position(game);
+    } else if (game->ball->player_scored) {
+        audio_player_play(game->audio_player, SCORE);
+        reset_position(game);
+    }
 }
 
 Ball *create_ball_random_direction() {

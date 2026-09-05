@@ -48,6 +48,8 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
     Core/Src/wav_file_reader.c
+    Core/Src/audio_player.c
+    Core/Src/i2s_interrupt_handler.c
     Core/Src/driver/max7219.c
     Core/Src/driver/double_max7219_display.c
     Core/Src/game/pong_game_manager.c

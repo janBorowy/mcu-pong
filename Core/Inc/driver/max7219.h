@@ -2,9 +2,7 @@
 #define MAX7219_H
 
 #include <stdint.h>
-#include "stm32f446xx.h"
-#include "stm32f4xx_hal.h"
-#include "stm32f4xx_hal_gpio.h"
+#include "stm32f4xx.h"
 #include <stdbool.h>
 
 typedef struct {

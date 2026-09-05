@@ -74,7 +74,7 @@ enum WavLoadStatus wav_load_file(WavFile *file, const uint8_t *binary_data) {
     file->bits_per_sample = read_short(wav_block_data + 14);
 
     file->sound_data_size = blocks[data_block_idx].block_size;
-    file->sound_data = data_block_data + 4;
+    file->sound_data = data_block_data;
 
     return WAV_SUCCESS;
 }
